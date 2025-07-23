@@ -1,0 +1,40 @@
+{
+  "name": "@mrfokus/vue-date-picker",
+  "version": "0.1.0",
+  "description": "Гибкий Vue 3 компонент выбора даты с поддержкой одиночных и диапазонных дат.",
+  "keywords": ["vue", "date-picker", "calendar", "datepicker", "component", "vue3", "date-range", "range"],
+  "author": {
+    "name": "mrfokus",
+    "url": "https://github.com/mrfokus"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mrfokus/vue-date-picker.git"
+  },
+  "bugs": {
+    "url": "https://github.com/mrfokus/vue-date-picker/issues"
+  },
+  "homepage": "https://github.com/mrfokus/vue-date-picker#readme",
+  "bin": {
+    "@mrfokus/vue-date-picker": "./cli/init.js"
+  },
+  "scripts": {
+    "build": "tsup cli/init.ts --format esm --target node20 --out-dir cli"
+  },
+  "files": ["components", "cli"],
+  "type": "module",
+  "dependencies": {
+    "fs-extra": "^11.1.1",
+    "inquirer": "^12.8.2",
+    "prompts": "^2.4.2"
+  },
+  "peerDependencies": {
+    "vue": "^3.0.0"
+  },
+  "devDependencies": {
+    "tsup": "^8.5.0",
+    "typescript": "^5.8.3",
+    "vue": "^3.0.0"
+  }
+}
