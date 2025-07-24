@@ -32,6 +32,7 @@ async function installDatePicker() {
   ])
 
   await copyFile('components/DatePicker.vue', path.join(componentPath, 'DatePicker.vue'))
+  return componentPath
 }
 
 async function installDoubleDatePicker() {
@@ -43,9 +44,9 @@ async function installDoubleDatePicker() {
       default: true
     }
   ])
-
+  let componentPath = './components'
   if (needDatePicker) {
-    await installDatePicker()
+    componentPath = await installDatePicker()
   }
 
   const { doublePath } = await inquirer.prompt([
@@ -53,7 +54,7 @@ async function installDoubleDatePicker() {
       name: 'doublePath',
       type: 'input',
       message: 'Куда установить компонент DoubleDatePicker.vue?',
-      default: './components'
+      default: componentPath
     }
   ])
 

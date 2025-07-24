@@ -329,6 +329,8 @@ function isWeekWithEndDay(week?: Date[]) {
 .date-picker .day {
   cursor: pointer;
   border-radius: var(--dp-days-border-radius, 10px);
+  color: var(--dp-text-color, #191135);
+
 }
 /* .date-picker.process-select .day:not(.active):hover {
   background: var(--dp-day-highlight,#F2F4F7);

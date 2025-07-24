@@ -28,6 +28,7 @@ async function installDatePicker() {
     }
   ]);
   await copyFile("components/DatePicker.vue", path.join(componentPath, "DatePicker.vue"));
+  return componentPath;
 }
 async function installDoubleDatePicker() {
   const { needDatePicker } = await inquirer.prompt([
@@ -38,15 +39,16 @@ async function installDoubleDatePicker() {
       default: true
     }
   ]);
+  let componentPath = "./components";
   if (needDatePicker) {
-    await installDatePicker();
+    componentPath = await installDatePicker();
   }
   const { doublePath } = await inquirer.prompt([
     {
       name: "doublePath",
       type: "input",
       message: "\u041A\u0443\u0434\u0430 \u0443\u0441\u0442\u0430\u043D\u043E\u0432\u0438\u0442\u044C \u043A\u043E\u043C\u043F\u043E\u043D\u0435\u043D\u0442 DoubleDatePicker.vue?",
-      default: "./components"
+      default: componentPath
     }
   ]);
   await copyFile("components/DoubleDatePicker.vue", path.join(doublePath, "DoubleDatePicker.vue"));
