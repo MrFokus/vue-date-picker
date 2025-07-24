@@ -7,12 +7,6 @@ Vue 3 компонент выбора даты с поддержкой один�
 ## 🚀 Установка
 
 ```bash
-npm install @mrfokus/vue-date-picker
-```
-
-Или через CLI:
-
-```bash
 npx @mrfokus/vue-date-picker
 ```
 
