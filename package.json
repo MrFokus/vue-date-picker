@@ -22,7 +22,7 @@
   "scripts": {
     "build": "tsup cli/init.ts --format esm --target node20 --out-dir cli"
   },
-  "files": ["components", "cli"],
+  "files": ["components", "cli", "types"],
   "type": "module",
   "dependencies": {
     "fs-extra": "^11.1.1",

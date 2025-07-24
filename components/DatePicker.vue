@@ -1,9 +1,9 @@
 <template>
-  <div class="date-picker">
+  <div class="date-picker" :class="{'process-select':isProcessRangeSelect()}">
     <slot name="header">
       <header class="monts-container">
-        <slot :props="{ prevMonth }" name="prev-button">
-          <button @click="prevMonth" class="prev">
+        <slot v-bind="{ setMonth }" name="prev-button">
+          <button @click="setMonth(-1)" class="prev">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
               <path
                 d="M12.5 15L8.63137 11.1314C8.23535 10.7354 8.03735 10.5373 7.96316 10.309C7.8979 10.1082 7.8979 9.89183 7.96316 9.69098C8.03735 9.46265 8.23535 9.26465 8.63137 8.86863L12.5 5"
@@ -11,11 +11,11 @@
             </svg>
           </button>
         </slot>
-        <slot :props="{ currentDay }" name="current-day">
+        <slot v-bind="{ currentDay }" name="current-day">
           {{ month[currentDay.getMonth()] }} {{ currentDay.getFullYear() }}
         </slot>
-        <slot :props="{ nextMonth }" name="next-button">
-          <button @click="nextMonth" class="next">
+        <slot v-bind="{ setMonth }" name="next-button">
+          <button @click="setMonth(1)" class="next">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
               <path
                 d="M7.5 15L11.3686 11.1314C11.7646 10.7354 11.9627 10.5373 12.0368 10.309C12.1021 10.1082 12.1021 9.89183 12.0368 9.69098C11.9627 9.46265 11.7646 9.26465 11.3686 8.86863L7.5 5"
@@ -26,12 +26,12 @@
       </header>
     </slot>
     <div class="days">
-      <slot name="day-week" :props="{ daysWeek }">
+      <slot name="day-week" v-bind="{ daysWeek }">
         <ul class="days-week-container">
           <li class="day-week" v-for="day in daysWeek">{{ day }}</li>
         </ul>
       </slot>
-      <slot name="days" :props="{ days, currentDay }">
+      <slot name="days" v-bind="{ days, currentDay }">
         <transition name="fade" mode="out-in">
           <ul class="weeks" :key="currentDay.getFullYear() + '-' + currentDay.getMonth()">
             <li class="week" v-for="(week, index) in days"
@@ -39,7 +39,7 @@
               <div v-for="(day, index) in week" @mousemove="changeIndicator(day)" class="indicator"
                 :class="isHighlightDay(day)">
                 <slot :name="day.getTime()"
-                  :props="{ day, currentDay, selectDay, setDay, setRange, isToday, isOtherMonthDay, isActiveDay }">
+                  v-bind="{ day, currentDay, selectDay, setDay, setRange, isToday, isOtherMonthDay, isActiveDay }">
                   <button class="day" @click="selectDay(day)"
                     :class="{ 'today': isToday(day), 'other-month-day': isOtherMonthDay(day, currentDay), active: isActiveDay(day) }">{{
                       day.getDate() }}
@@ -77,16 +77,28 @@ const emit = defineEmits<{
 const daysWeek = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"]
 const month = ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"]
 
-const currentDay = ref(new Date())
+const currentDay = defineModel('currentDay',{default:new Date()})
 currentDay.value.setHours(0, 0, 0, 0)
 
 const days = computed<Date[][]>(() => calculateDays(currentDay.value))
 
-const highlightDays = ref<Date[]>([])
+const highlightDays = defineModel<Date[]>('highlightDays',{default:[]})
 const startDay = ref<Date | null>()
 const endDay = ref<Date | null>()
 const moveStartDay = ref<Date | null>()
 const moveEndDay = ref<Date | null>()
+
+watch(() => props.modelValue, () => {
+  changeModelValue()
+}, { deep: true, immediate: true })
+watch(() => [startDay.value, endDay.value], () => {
+  changeLocalValue()
+}, { deep: true, immediate: true })
+watch(() => [endDay.value], () => {
+  if(startDay.value && endDay.value)
+  highlightDays.value = getHighlightDays(startDay.value, endDay.value)
+}, { deep: true, immediate: true })
+
 
 function changeModelValue() {
   if (!props.modelValue) return
@@ -113,20 +125,17 @@ function changeLocalValue() {
   }
 }
 
-watch(() => props.modelValue, () => {
-  changeModelValue()
-  console.log('in');
-}, { deep: true, immediate: true })
-watch(() => [startDay.value, endDay.value], () => {
-  console.log('out');
-  changeLocalValue()
-}, { deep: true, immediate: true })
 
 function isRangeType(value: unknown): value is ModelRange {
   return typeof value === 'object' &&
     value !== null &&
     'start' in value &&
     'end' in value;
+}
+
+function isProcessRangeSelect(){
+  if(props.mode == 'pick') return false
+  return startDay.value && !endDay.value
 }
 
 function isPickType(value: ModelPick | ModelRange): value is ModelPick {
@@ -163,12 +172,8 @@ function isOtherMonthDay(day: Date, current: Date) {
   return day.getMonth() !== current.getMonth()
 }
 
-function nextMonth() {
-  currentDay.value.setMonth(currentDay.value.getMonth() + 1)
-  currentDay.value = new Date(currentDay.value)
-}
-function prevMonth() {
-  currentDay.value.setMonth(currentDay.value.getMonth() - 1)
+function setMonth(value:number) {
+  currentDay.value.setMonth(currentDay.value.getMonth() + value)
   currentDay.value = new Date(currentDay.value)
 }
 
@@ -325,9 +330,9 @@ function isWeekWithEndDay(week?: Date[]) {
   cursor: pointer;
   border-radius: var(--dp-days-border-radius, 10px);
 }
-.date-picker .day:not(.active):hover {
+/* .date-picker.process-select .day:not(.active):hover {
   background: var(--dp-day-highlight,#F2F4F7);
-}
+} */
 
 .date-picker .today {
   color: var(--dp-primary, #0E1829);
@@ -352,7 +357,7 @@ function isWeekWithEndDay(week?: Date[]) {
   color: var(--dp-other-month-color, #9C99A8);
 }
 
-.date-picker .active {
+.date-picker .active,.date-picker.process-select .day:not(.active):hover {
   color: white;
   background-color: var(--dp-primary, #0E1829);
 }
