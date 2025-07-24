@@ -55,6 +55,7 @@
 </template>
 
 <script setup lang="ts">
+import { computed, ref, watch } from 'vue';
 
 type ModelRange = {
   start: Date | null,
@@ -289,11 +290,14 @@ function isWeekWithEndDay(week?: Date[]) {
 .days .weeks {
   display: flex;
   flex-direction: column;
+  gap: 2px;
 }
 
 .days .week,
 .days .days-week-container {
   display: flex;
+  border-radius: var(--dp-days-border-radius, 10px);
+  overflow: hidden;
 }
 
 .monts-container {
@@ -321,11 +325,14 @@ function isWeekWithEndDay(week?: Date[]) {
   cursor: pointer;
   border-radius: var(--dp-days-border-radius, 10px);
 }
+.date-picker .day:not(.active):hover {
+  background: var(--dp-day-highlight,#F2F4F7);
+}
 
 .date-picker .today {
-  color: var(--dp-primary, #5F42C3);
-  border: 1px solid var(--dp-primary, #5F42C3);
-  background: rgba(95, 66, 195, 0.08);
+  color: var(--dp-primary, #0E1829);
+  border: 1px solid var(--dp-primary, #0B182A);
+  background: transparent;
 }
 
 .date-picker .monts-container .prev,
@@ -335,7 +342,8 @@ function isWeekWithEndDay(week?: Date[]) {
   width: fit-content;
   padding: 8px;
   border-radius: 12px;
-  border: var(--dp-border, 1px solid #E8E7EB);
+  border: none;
+  /* border: var(--dp-border, 1px solid #E8E7EB); */
   background: var(--dp-background, #FFF);
   cursor: pointer;
 }
@@ -345,8 +353,8 @@ function isWeekWithEndDay(week?: Date[]) {
 }
 
 .date-picker .active {
-  color: var(--dp-background, white);
-  background-color: var(--dp-primary, #5F42C3);
+  color: white;
+  background-color: var(--dp-primary, #0E1829);
 }
 
 .date-picker .indicator {
@@ -354,7 +362,7 @@ function isWeekWithEndDay(week?: Date[]) {
 }
 
 .date-picker .indicator.highlight {
-  background: rgba(95, 66, 195, 0.08);
+  background: var(--dp-day-highlight,#F2F4F7);
 }
 
 .date-picker .indicator.highlight.start {
