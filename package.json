@@ -1,8 +1,17 @@
 {
   "name": "@mrfokus/vue-date-picker",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "Гибкий Vue 3 компонент выбора даты с поддержкой одиночных и диапазонных дат.",
-  "keywords": ["vue", "date-picker", "calendar", "datepicker", "component", "vue3", "date-range", "range"],
+  "keywords": [
+    "vue",
+    "date-picker",
+    "calendar",
+    "datepicker",
+    "component",
+    "vue3",
+    "date-range",
+    "range"
+  ],
   "author": {
     "name": "mrfokus",
     "url": "https://github.com/mrfokus"
@@ -22,7 +31,11 @@
   "scripts": {
     "build": "tsup cli/init.ts --format esm --target node20 --out-dir cli"
   },
-  "files": ["components", "cli", "types"],
+  "files": [
+    "components",
+    "cli",
+    "types"
+  ],
   "type": "module",
   "dependencies": {
     "fs-extra": "^11.1.1",
