@@ -5,9 +5,37 @@ import path from "path";
 import fs from "fs-extra";
 import { fileURLToPath } from "url";
 import inquirer from "inquirer";
+import { execSync } from "child_process";
 var __filename = fileURLToPath(import.meta.url);
 var __dirname = path.dirname(__filename);
 var baseDir = path.resolve(__dirname, "../");
+async function ensureRekaUIInstalled() {
+  const userNodeModules = path.resolve(process.cwd(), "node_modules/reka-ui");
+  if (fs.existsSync(userNodeModules)) {
+    console.log("\u2705 reka-ui \u043D\u0430\u0439\u0434\u0435\u043D\u0430 \u0432 \u043F\u0440\u043E\u0435\u043A\u0442\u0435 \u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044F");
+    return;
+  }
+  console.log("\u26A0\uFE0F  reka-ui \u043D\u0435 \u043D\u0430\u0439\u0434\u0435\u043D\u0430 \u0432 \u043F\u0440\u043E\u0435\u043A\u0442\u0435.");
+  const { installReka } = await inquirer.prompt([
+    {
+      name: "installReka",
+      type: "confirm",
+      message: "\u0425\u043E\u0442\u0438\u0442\u0435 \u0443\u0441\u0442\u0430\u043D\u043E\u0432\u0438\u0442\u044C reka-ui \u0432 \u0432\u0430\u0448 \u043F\u0440\u043E\u0435\u043A\u0442?",
+      default: true
+    }
+  ]);
+  if (installReka) {
+    try {
+      console.log("\u{1F4E6} \u0423\u0441\u0442\u0430\u043D\u0430\u0432\u043B\u0438\u0432\u0430\u044E reka-ui...");
+      execSync("npm install reka-ui@^2.6.0", { stdio: "inherit", cwd: process.cwd() });
+      console.log("\u2705 reka-ui \u0443\u0441\u043F\u0435\u0448\u043D\u043E \u0443\u0441\u0442\u0430\u043D\u043E\u0432\u043B\u0435\u043D\u0430 \u0432 \u043F\u0440\u043E\u0435\u043A\u0442!");
+    } catch (err) {
+      console.error("\u274C \u041E\u0448\u0438\u0431\u043A\u0430 \u043F\u0440\u0438 \u0443\u0441\u0442\u0430\u043D\u043E\u0432\u043A\u0435 reka-ui:", err.message);
+    }
+  } else {
+    console.warn("\u26A0\uFE0F reka-ui \u043D\u0435 \u0443\u0441\u0442\u0430\u043D\u043E\u0432\u043B\u0435\u043D\u0430. \u041A\u043E\u043C\u043F\u043E\u043D\u0435\u043D\u0442\u044B \u043C\u043E\u0433\u0443\u0442 \u043D\u0435 \u0440\u0430\u0431\u043E\u0442\u0430\u0442\u044C \u043A\u043E\u0440\u0440\u0435\u043A\u0442\u043D\u043E.");
+  }
+}
 async function copyFile(from, to) {
   const src = path.join(baseDir, from);
   const dest = path.resolve(to);
@@ -27,45 +55,14 @@ async function installDatePicker() {
       default: "./components"
     }
   ]);
-  await copyFile("components/DatePicker.vue", path.join(componentPath, "DatePicker.vue"));
+  await copyFile(
+    "components/DatePicker.vue",
+    path.join(componentPath, "DatePicker.vue")
+  );
   return componentPath;
 }
-async function installDoubleDatePicker() {
-  const { needDatePicker } = await inquirer.prompt([
-    {
-      name: "needDatePicker",
-      type: "confirm",
-      message: "DoubleDatePicker \u0437\u0430\u0432\u0438\u0441\u0438\u0442 \u043E\u0442 DatePicker. \u0423\u0441\u0442\u0430\u043D\u043E\u0432\u0438\u0442\u044C DatePicker \u0442\u043E\u0436\u0435?",
-      default: true
-    }
-  ]);
-  let componentPath = "./components";
-  if (needDatePicker) {
-    componentPath = await installDatePicker();
-  }
-  const { doublePath } = await inquirer.prompt([
-    {
-      name: "doublePath",
-      type: "input",
-      message: "\u041A\u0443\u0434\u0430 \u0443\u0441\u0442\u0430\u043D\u043E\u0432\u0438\u0442\u044C \u043A\u043E\u043C\u043F\u043E\u043D\u0435\u043D\u0442 DoubleDatePicker.vue?",
-      default: componentPath
-    }
-  ]);
-  await copyFile("components/DoubleDatePicker.vue", path.join(doublePath, "DoubleDatePicker.vue"));
-}
 async function main() {
-  const { component } = await inquirer.prompt([
-    {
-      name: "component",
-      type: "list",
-      message: "\u0427\u0442\u043E \u0432\u044B \u0445\u043E\u0442\u0438\u0442\u0435 \u0443\u0441\u0442\u0430\u043D\u043E\u0432\u0438\u0442\u044C?",
-      choices: ["DatePicker", "DoubleDatePicker"]
-    }
-  ]);
-  if (component === "DatePicker") {
-    await installDatePicker();
-  } else {
-    await installDoubleDatePicker();
-  }
+  await ensureRekaUIInstalled();
+  await installDatePicker();
 }
 main();
