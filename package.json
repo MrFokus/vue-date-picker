@@ -1,6 +1,6 @@
 {
   "name": "@mrfokus/vue-date-picker",
-  "version": "0.2.5",
+  "version": "0.2.6",
   "description": "Гибкий Vue 3 компонент выбора даты с поддержкой одиночных и диапазонных дат.",
   "keywords": [
     "vue",
