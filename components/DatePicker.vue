@@ -163,7 +163,7 @@ function toCalendarDate(date: Date) {
               <RangeCalendarGridHead>
                 <RangeCalendarGridRow class="mrfokus-dp-CalendarGridRow">
                   <RangeCalendarHeadCell
-                    v-for="(day) in weekDays"
+                    v-for="day in weekDays"
                     :key="day"
                     class="mrfokus-dp-CalendarHeadCell"
                   >
@@ -203,6 +203,14 @@ function toCalendarDate(date: Date) {
   </RangeCalendarRoot>
 </template>
 
+<style scoped>
+/* --- Общие стили --- */
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+</style>
 <style>
 /* :root {
   Цвета 
@@ -237,13 +245,7 @@ function toCalendarDate(date: Date) {
   --dp-fade-ease: ease;
   --dp-fade-translate: 10px;
 } */
-/* --- Общие стили --- */
-* {
-  padding: 0;
-  margin: 0;
-  box-sizing: border-box;
-}
- 
+
 /* --- Анимация появления --- */
 .fade-enter-active,
 .fade-leave-active {
