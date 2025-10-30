@@ -362,6 +362,26 @@ function toCalendarDate(date: Date) {
   background: var(--dp-color-muted, #f2f4f7);
 }
 
+.mrfokus-dp-CalendarCellTrigger[data-selection-start="true"],
+.mrfokus-dp-Calendar:has(.mrfokus-dp-CalendarCellTrigger[data-selected])
+  .mrfokus-dp-CalendarCellTrigger[data-highlighted-start="true"] {
+  background: linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 0) 50%,
+    var(--dp-color-muted, #f2f4f7) 50%
+  );
+}
+
+.mrfokus-dp-CalendarCellTrigger[data-selection-end="true"],
+.mrfokus-dp-Calendar:has(.mrfokus-dp-CalendarCellTrigger[data-selected])
+  .mrfokus-dp-CalendarCellTrigger[data-highlighted-end="true"] {
+  background: linear-gradient(
+    90deg,
+    var(--dp-color-muted, #f2f4f7) 50%,
+    rgba(0, 0, 0, 0) 50%
+  );
+}
+
 .mrfokus-dp-CalendarCellTrigger[data-today] .mrfokus-dp-CalendarDay {
   border-radius: var(--dp-radius-day, 10px);
   border: 1px solid var(--dp-color-today-border, #0b182a);
@@ -406,6 +426,10 @@ function toCalendarDate(date: Date) {
 
 .mrfokus-dp-CalendarCellTrigger[data-highlighted-start="true"].mrfokus-dp-CalendarCellTrigger[data-highlighted-end="true"] {
   border-radius: var(--dp-radius-day, 10px);
+  background: transparent !important;
+}
+.mrfokus-dp-CalendarCellTrigger[data-selection-start="true"].mrfokus-dp-CalendarCellTrigger[data-selection-end="true"] {
+  background: transparent;
 }
 
 /* --- Прочие элементы --- */
@@ -451,7 +475,8 @@ function toCalendarDate(date: Date) {
 .mrfokus-dp-CalendarCell:not([data-disabled]) {
   cursor: pointer;
 }
-.mrfokus-dp-CalendarCell:not(:first-of-type) .mrfokus-dp-CalendarDay {
-  padding: 0 2px;
+.mrfokus-dp-CalendarCell:not(:first-child) .mrfokus-dp-CalendarDay {
+  margin-left: 1px;
+  margin-right: 1px;
 }
 </style>
