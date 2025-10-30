@@ -14,7 +14,7 @@ import {
   RangeCalendarRoot,
   type RangeCalendarRootProps,
 } from "reka-ui";
-import { start } from "repl";
+import { ref, watch } from "vue";
 
 const ruMonths = [
   "январь",
@@ -85,7 +85,7 @@ function toCalendarDate(date: Date) {
   <RangeCalendarRoot
     ref="calendarRef"
     :number-of-months="props.numberOfMonths"
-    v-slot="{ weekDays, grid, date, modelValue }"
+    v-slot="{ weekDays, grid }"
     :locale="'ru'"
     :weekday-format="'short'"
     class="mrfokus-dp-Calendar"
@@ -163,7 +163,7 @@ function toCalendarDate(date: Date) {
               <RangeCalendarGridHead>
                 <RangeCalendarGridRow class="mrfokus-dp-CalendarGridRow">
                   <RangeCalendarHeadCell
-                    v-for="(day, index) in weekDays"
+                    v-for="(day) in weekDays"
                     :key="day"
                     class="mrfokus-dp-CalendarHeadCell"
                   >
