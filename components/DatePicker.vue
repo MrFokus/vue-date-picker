@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { CalendarDate } from "@internationalized/date";
+import { CalendarDate } from '@internationalized/date'
 import {
   RangeCalendarCell,
   RangeCalendarCellTrigger,
@@ -13,44 +13,44 @@ import {
   RangeCalendarPrev,
   RangeCalendarRoot,
   type RangeCalendarRootProps,
-} from "reka-ui";
-import { ref, watch } from "vue";
+} from 'reka-ui'
+import { ref, watch } from 'vue'
 
 const ruMonths = [
-  "январь",
-  "февраль",
-  "март",
-  "апрель",
-  "май",
-  "июнь",
-  "июль",
-  "август",
-  "сентябрь",
-  "октябрь",
-  "ноябрь",
-  "декабрь",
-];
+  'январь',
+  'февраль',
+  'март',
+  'апрель',
+  'май',
+  'июнь',
+  'июль',
+  'август',
+  'сентябрь',
+  'октябрь',
+  'ноябрь',
+  'декабрь',
+]
 
 interface IPropsDatePickerValue {
-  start: Date | null;
-  end: Date | null;
+  start: Date | null
+  end: Date | null
 }
 
 const props = withDefaults(
   defineProps<
-    Omit<RangeCalendarRootProps, "modelValue" | "placeholder"> & {
-      modelValue: IPropsDatePickerValue;
+    Omit<RangeCalendarRootProps, 'modelValue' | 'placeholder'> & {
+      modelValue: IPropsDatePickerValue
     }
   >(),
   {
     numberOfMonths: 1,
   }
-);
+)
 const emit = defineEmits<{
-  "update:modelValue": [IPropsDatePickerValue];
-}>();
+  'update:modelValue': [IPropsDatePickerValue]
+}>()
 
-const localModelValue = ref<RangeCalendarRootProps["modelValue"]>();
+const localModelValue = ref<RangeCalendarRootProps['modelValue']>()
 
 watch(
   () => props.modelValue,
@@ -59,31 +59,28 @@ watch(
       localModelValue.value = {
         start: value.start?.getTime() ? toCalendarDate(value.start) : undefined,
         end: value.end?.getTime() ? toCalendarDate(value.end) : undefined,
-      };
+      }
   },
   { immediate: true, deep: true }
-);
+)
 
-function changeDate(value: RangeCalendarRootProps["modelValue"]) {
+function changeDate(value: RangeCalendarRootProps['modelValue']) {
   if (value)
-    emit("update:modelValue", {
+    emit('update:modelValue', {
       start: value.start ? new Date(value.start.toString()) : null,
       end: value.end ? new Date(value.end.toString()) : null,
-    });
+    })
 }
 
 function toCalendarDate(date: Date) {
-  return new CalendarDate(
-    date.getFullYear(),
-    date.getMonth() + 1,
-    date.getDate()
-  );
+  return new CalendarDate(date.getFullYear(), date.getMonth() + 1, date.getDate())
 }
 </script>
 
 <template>
   <RangeCalendarRoot
     ref="calendarRef"
+    v-bind="props"
     :number-of-months="props.numberOfMonths"
     v-slot="{ weekDays, grid }"
     :locale="'ru'"
@@ -145,19 +142,24 @@ function toCalendarDate(date: Date) {
         </slot>
       </RangeCalendarNext>
     </RangeCalendarHeader>
-    <Transition name="fade" mode="out-in">
+    <Transition
+      name="fade"
+      mode="out-in"
+    >
       <div
         :key="grid[0] ? grid[0].value.toString() : ''"
         class="mrfokus-dp-CalendarFadeWrapper"
       >
-        <template v-for="month in grid" :key="month.value.toString()">
+        <template
+          v-for="month in grid"
+          :key="month.value.toString()"
+        >
           <slot name="divider">
             <hr class="mrfokus-dp-CalendarDivider" />
           </slot>
           <div class="mrfokus-dp-CalendarWrapperGrid">
             <RangeCalendarHeader class="mrfokus-dp-CalendarHeader"
-              >{{ ruMonths[month.value.month - 1] }}
-              {{ month.value.year }}</RangeCalendarHeader
+              >{{ ruMonths[month.value.month - 1] }} {{ month.value.year }}</RangeCalendarHeader
             >
             <RangeCalendarGrid class="mrfokus-dp-CalendarGrid">
               <RangeCalendarGridHead>
@@ -203,14 +205,6 @@ function toCalendarDate(date: Date) {
   </RangeCalendarRoot>
 </template>
 
-<style scoped>
-/* --- Общие стили --- */
-* {
-  padding: 0;
-  margin: 0;
-  box-sizing: border-box;
-}
-</style>
 <style>
 /* :root {
   Цвета 
@@ -218,6 +212,7 @@ function toCalendarDate(date: Date) {
   --dp-color-text: #0e1829;
   --dp-color-muted: #f2f4f7;
   --dp-color-today-border: #0b182a;
+  --dp-color-muted-day:'#96A2B5';
   --dp-color-selected-bg: #0e1829;
   --dp-color-selected-text: #ffffff;
 
@@ -245,11 +240,13 @@ function toCalendarDate(date: Date) {
   --dp-fade-ease: ease;
   --dp-fade-translate: 10px;
 } */
+/* --- Общие стили --- */
 
 /* --- Анимация появления --- */
 .fade-enter-active,
 .fade-leave-active {
-  transition: opacity var(--dp-fade-duration, 0.1s) var(--dp-fade-ease, ease),
+  transition:
+    opacity var(--dp-fade-duration, 0.1s) var(--dp-fade-ease, ease),
     transform var(--dp-fade-duration, 0.1s) var(--dp-fade-ease, ease);
 }
 
@@ -279,7 +276,7 @@ function toCalendarDate(date: Date) {
   display: flex;
   flex-direction: column;
   align-items: center;
-  font-family: var(--dp-font-family, "Inter", sans-serif);
+  font-family: var(--dp-font-family, 'Inter', sans-serif);
   color: var(--dp-color-text, #0e1829);
   text-align: center;
   font-size: var(--dp-font-size, 14px);
@@ -293,8 +290,7 @@ function toCalendarDate(date: Date) {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: var(--dp-spacing, 20px) var(--dp-spacing, 20px) 0
-    var(--dp-spacing, 20px);
+  padding: var(--dp-spacing, 20px) var(--dp-spacing, 20px) 0 var(--dp-spacing, 20px);
   text-transform: capitalize;
   height: 56px;
 }
@@ -330,8 +326,12 @@ function toCalendarDate(date: Date) {
   background-color: var(--dp-color-muted, #f2f4f7);
   border: none;
   min-width: 1px;
+  height: auto;
   margin-top: var(--dp-divider-margin-top, 24px);
   border-radius: 999px;
+}
+.mrfokus-dp-CalendarDivider:first-of-type {
+  display: none;
 }
 
 /* --- Ячейки календаря --- */
@@ -353,7 +353,7 @@ function toCalendarDate(date: Date) {
 
 /* --- Состояния выделения --- */
 .mrfokus-dp-CalendarCellTrigger[data-highlighted],
-.mrfokus-dp-CalendarCellTrigger[data-selected="true"] {
+.mrfokus-dp-CalendarCellTrigger[data-selected='true'] {
   background: var(--dp-color-muted, #f2f4f7);
 }
 
@@ -362,42 +362,36 @@ function toCalendarDate(date: Date) {
   border: 1px solid var(--dp-color-today-border, #0b182a);
 }
 
-.mrfokus-dp-CalendarCellTrigger[data-selection-start="true"]
-  .mrfokus-dp-CalendarDay,
-.mrfokus-dp-CalendarCellTrigger[data-selection-end="true"]
+.mrfokus-dp-CalendarCellTrigger[data-selection-start='true'] .mrfokus-dp-CalendarDay,
+.mrfokus-dp-CalendarCellTrigger[data-selection-end='true'] .mrfokus-dp-CalendarDay,
+.mrfokus-dp-Calendar:has(.mrfokus-dp-CalendarCellTrigger[data-selected])
+  .mrfokus-dp-CalendarCellTrigger[data-highlighted-end='true']
   .mrfokus-dp-CalendarDay,
 .mrfokus-dp-Calendar:has(.mrfokus-dp-CalendarCellTrigger[data-selected])
-  .mrfokus-dp-CalendarCellTrigger[data-highlighted-end="true"]
-  .mrfokus-dp-CalendarDay,
-.mrfokus-dp-Calendar:has(.mrfokus-dp-CalendarCellTrigger[data-selected])
-  .mrfokus-dp-CalendarCellTrigger[data-highlighted-start="true"]
+  .mrfokus-dp-CalendarCellTrigger[data-highlighted-start='true']
   .mrfokus-dp-CalendarDay {
   background: var(--dp-color-selected-bg, #0e1829);
   color: var(--dp-color-selected-text, #ffffff);
 }
 
 /* --- Радиусы начала и конца диапазона --- */
-.mrfokus-dp-CalendarCellTrigger[data-highlighted-start="true"],
-.mrfokus-dp-CalendarCellTrigger[data-selection-start="true"],
-.mrfokus-dp-CalendarCell:first-of-type
-  .mrfokus-dp-CalendarCellTrigger[data-highlighted],
-.mrfokus-dp-CalendarCell:first-of-type
-  .mrfokus-dp-CalendarCellTrigger[data-selected="true"] {
+.mrfokus-dp-CalendarCellTrigger[data-highlighted-start='true'],
+.mrfokus-dp-CalendarCellTrigger[data-selection-start='true'],
+.mrfokus-dp-CalendarCell:first-of-type .mrfokus-dp-CalendarCellTrigger[data-highlighted],
+.mrfokus-dp-CalendarCell:first-of-type .mrfokus-dp-CalendarCellTrigger[data-selected='true'] {
   border-top-left-radius: var(--dp-radius-day, 10px);
   border-bottom-left-radius: var(--dp-radius-day, 10px);
 }
 
-.mrfokus-dp-CalendarCellTrigger[data-highlighted-end="true"],
-.mrfokus-dp-CalendarCellTrigger[data-selection-end="true"],
-.mrfokus-dp-CalendarCell:last-of-type
-  .mrfokus-dp-CalendarCellTrigger[data-highlighted],
-.mrfokus-dp-CalendarCell:last-of-type
-  .mrfokus-dp-CalendarCellTrigger[data-selected="true"] {
+.mrfokus-dp-CalendarCellTrigger[data-highlighted-end='true'],
+.mrfokus-dp-CalendarCellTrigger[data-selection-end='true'],
+.mrfokus-dp-CalendarCell:last-of-type .mrfokus-dp-CalendarCellTrigger[data-highlighted],
+.mrfokus-dp-CalendarCell:last-of-type .mrfokus-dp-CalendarCellTrigger[data-selected='true'] {
   border-top-right-radius: var(--dp-radius-day, 10px);
   border-bottom-right-radius: var(--dp-radius-day, 10px);
 }
 
-.mrfokus-dp-CalendarCellTrigger[data-highlighted-start="true"].mrfokus-dp-CalendarCellTrigger[data-highlighted-end="true"] {
+.mrfokus-dp-CalendarCellTrigger[data-highlighted-start='true'].mrfokus-dp-CalendarCellTrigger[data-highlighted-end='true'] {
   border-radius: var(--dp-radius-day, 10px);
 }
 
@@ -424,6 +418,10 @@ function toCalendarDate(date: Date) {
   width: 100%;
   margin: 0 -80px;
   z-index: 0;
+}
+.mrfokus-dp-CalendarCellTrigger[data-unavailable] {
+  cursor: not-allowed;
+  color: var(--dp-color-muted-day, #96a2b5);
 }
 .mrfokus-dp-CalendarWrapperGrid {
   display: flex;

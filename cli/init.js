@@ -36,6 +36,33 @@ async function ensureRekaUIInstalled() {
     console.warn("\u26A0\uFE0F reka-ui \u043D\u0435 \u0443\u0441\u0442\u0430\u043D\u043E\u0432\u043B\u0435\u043D\u0430. \u041A\u043E\u043C\u043F\u043E\u043D\u0435\u043D\u0442\u044B \u043C\u043E\u0433\u0443\u0442 \u043D\u0435 \u0440\u0430\u0431\u043E\u0442\u0430\u0442\u044C \u043A\u043E\u0440\u0440\u0435\u043A\u0442\u043D\u043E.");
   }
 }
+async function ensureInternationalizedDateInstalled() {
+  const userNodeModules = path.resolve(process.cwd(), "node_modules/@internationalized/date");
+  if (fs.existsSync(userNodeModules)) {
+    console.log("\u2705 @internationalized/date \u043D\u0430\u0439\u0434\u0435\u043D\u0430 \u0432 \u043F\u0440\u043E\u0435\u043A\u0442\u0435 \u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044F");
+    return;
+  }
+  console.log("\u26A0\uFE0F  @internationalized/date \u043D\u0435 \u043D\u0430\u0439\u0434\u0435\u043D\u0430 \u0432 \u043F\u0440\u043E\u0435\u043A\u0442\u0435.");
+  const { instalInternationalized } = await inquirer.prompt([
+    {
+      name: "instalInternationalized",
+      type: "confirm",
+      message: "\u0425\u043E\u0442\u0438\u0442\u0435 \u0443\u0441\u0442\u0430\u043D\u043E\u0432\u0438\u0442\u044C @internationalized/date \u0432 \u0432\u0430\u0448 \u043F\u0440\u043E\u0435\u043A\u0442?",
+      default: true
+    }
+  ]);
+  if (instalInternationalized) {
+    try {
+      console.log("\u{1F4E6} \u0423\u0441\u0442\u0430\u043D\u0430\u0432\u043B\u0438\u0432\u0430\u044E @internationalized/date...");
+      execSync("npm install @internationalized/date@^2.6.0", { stdio: "inherit", cwd: process.cwd() });
+      console.log("\u2705 @internationalized/date \u0443\u0441\u043F\u0435\u0448\u043D\u043E \u0443\u0441\u0442\u0430\u043D\u043E\u0432\u043B\u0435\u043D\u0430 \u0432 \u043F\u0440\u043E\u0435\u043A\u0442!");
+    } catch (err) {
+      console.error("\u274C \u041E\u0448\u0438\u0431\u043A\u0430 \u043F\u0440\u0438 \u0443\u0441\u0442\u0430\u043D\u043E\u0432\u043A\u0435 @internationalized/date:", err.message);
+    }
+  } else {
+    console.warn("\u26A0\uFE0F @internationalized/date \u043D\u0435 \u0443\u0441\u0442\u0430\u043D\u043E\u0432\u043B\u0435\u043D\u0430. \u041A\u043E\u043C\u043F\u043E\u043D\u0435\u043D\u0442\u044B \u043C\u043E\u0433\u0443\u0442 \u043D\u0435 \u0440\u0430\u0431\u043E\u0442\u0430\u0442\u044C \u043A\u043E\u0440\u0440\u0435\u043A\u0442\u043D\u043E.");
+  }
+}
 async function copyFile(from, to) {
   const src = path.join(baseDir, from);
   const dest = path.resolve(to);
@@ -63,6 +90,7 @@ async function installDatePicker() {
 }
 async function main() {
   await ensureRekaUIInstalled();
+  await ensureInternationalizedDateInstalled();
   await installDatePicker();
 }
 main();

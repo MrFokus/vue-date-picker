@@ -41,6 +41,37 @@ async function ensureRekaUIInstalled() {
     console.warn('⚠️ reka-ui не установлена. Компоненты могут не работать корректно.')
   }
 }
+async function ensureInternationalizedDateInstalled() {
+  const userNodeModules = path.resolve(process.cwd(), 'node_modules/@internationalized/date')
+
+  if (fs.existsSync(userNodeModules)) {
+    console.log('✅ @internationalized/date найдена в проекте пользователя')
+    return
+  }
+
+  console.log('⚠️  @internationalized/date не найдена в проекте.')
+
+  const { instalInternationalized } = await inquirer.prompt([
+    {
+      name: 'instalInternationalized',
+      type: 'confirm',
+      message: 'Хотите установить @internationalized/date в ваш проект?',
+      default: true
+    }
+  ])
+
+  if (instalInternationalized) {
+    try {
+      console.log('📦 Устанавливаю @internationalized/date...')
+      execSync('npm install @internationalized/date@^2.6.0', { stdio: 'inherit', cwd: process.cwd() })
+      console.log('✅ @internationalized/date успешно установлена в проект!')
+    } catch (err) {
+      console.error('❌ Ошибка при установке @internationalized/date:', err.message)
+    }
+  } else {
+    console.warn('⚠️ @internationalized/date не установлена. Компоненты могут не работать корректно.')
+  }
+}
 
 async function copyFile(from, to) {
   const src = path.join(baseDir, from);
@@ -73,6 +104,7 @@ async function installDatePicker() {
 
 async function main() {
   await ensureRekaUIInstalled();
+  await ensureInternationalizedDateInstalled();
   await installDatePicker();
 }
 
