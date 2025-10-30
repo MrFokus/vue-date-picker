@@ -1,6 +1,6 @@
 {
   "name": "@mrfokus/vue-date-picker",
-  "version": "0.1.7",
+  "version": "0.2.0",
   "description": "Гибкий Vue 3 компонент выбора даты с поддержкой одиночных и диапазонных дат.",
   "keywords": [
     "vue",
@@ -38,11 +38,15 @@
   ],
   "type": "module",
   "dependencies": {
+    "@internationalized/date": "^3.10.0",
     "fs-extra": "^11.1.1",
     "inquirer": "^12.8.2",
-    "prompts": "^2.4.2"
+    "prompts": "^2.4.2",
+    "reka-ui": "^2.6.0"
   },
   "peerDependencies": {
+    "reka-ui": "^2.6.0",
+    "@internationalized/date": "^3.10.0",
     "vue": "^3.0.0"
   },
   "devDependencies": {
