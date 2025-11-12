@@ -1,75 +1,78 @@
 <script setup lang="ts">
-import { CalendarDate } from "@internationalized/date";
+import { CalendarDate, type DateValue } from '@internationalized/date'
 import {
-  RangeCalendarCell,
-  RangeCalendarCellTrigger,
-  RangeCalendarGrid,
-  RangeCalendarGridBody,
-  RangeCalendarGridHead,
-  RangeCalendarGridRow,
-  RangeCalendarHeadCell,
-  RangeCalendarHeader,
-  RangeCalendarNext,
-  RangeCalendarPrev,
-  RangeCalendarRoot,
-  type RangeCalendarRootProps,
-} from "reka-ui";
-import { ref, watch } from "vue";
+  CalendarCell,
+  CalendarCellTrigger,
+  CalendarGrid,
+  CalendarGridBody,
+  CalendarGridHead,
+  CalendarGridRow,
+  CalendarHeadCell,
+  CalendarHeader,
+  CalendarNext,
+  CalendarPrev,
+  CalendarRoot,
+  type CalendarRootProps
+} from 'reka-ui'
+import { ref, watch } from 'vue'
 
 const ruMonths = [
-  "январь",
-  "февраль",
-  "март",
-  "апрель",
-  "май",
-  "июнь",
-  "июль",
-  "август",
-  "сентябрь",
-  "октябрь",
-  "ноябрь",
-  "декабрь",
-];
-
-interface IPropsDatePickerValue {
-  start: Date | null;
-  end: Date | null;
-}
+  'январь',
+  'февраль',
+  'март',
+  'апрель',
+  'май',
+  'июнь',
+  'июль',
+  'август',
+  'сентябрь',
+  'октябрь',
+  'ноябрь',
+  'декабрь'
+]
+type IPropsDatePickerValue = Date | Date[] | null
 
 const props = withDefaults(
   defineProps<
-    Omit<RangeCalendarRootProps, "modelValue" | "placeholder"> & {
-      modelValue: IPropsDatePickerValue;
+    Omit<CalendarRootProps, 'modelValue' | 'placeholder'> & {
+      modelValue: IPropsDatePickerValue
     }
   >(),
   {
-    numberOfMonths: 1,
+    modelValue: null,
+    numberOfMonths: 1
   }
-);
+)
 const emit = defineEmits<{
-  "update:modelValue": [IPropsDatePickerValue];
-}>();
+  'update:modelValue': [IPropsDatePickerValue]
+}>()
 
-const localModelValue = ref<RangeCalendarRootProps["modelValue"]>();
+const localModelValue = ref<CalendarRootProps['modelValue']>()
 
 watch(
   () => props.modelValue,
   (value) => {
-    if (value)
-      localModelValue.value = {
-        start: value.start?.getTime() ? toCalendarDate(value.start) : undefined,
-        end: value.end?.getTime() ? toCalendarDate(value.end) : undefined,
-      };
+    if (value) {
+      console.log(value)
+
+      if (Array.isArray(value))
+        localModelValue.value = value.map((item: Date) => toCalendarDate(item))
+      else localModelValue.value = toCalendarDate(value)
+    }
   },
   { immediate: true, deep: true }
-);
+)
 
-function changeDate(value: RangeCalendarRootProps["modelValue"]) {
+function changeDate(value: CalendarRootProps['modelValue']) {
   if (value)
-    emit("update:modelValue", {
-      start: value.start ? new Date(value.start.toString()) : null,
-      end: value.end ? new Date(value.end.toString()) : null,
-    });
+    emit(
+      'update:modelValue',
+      Array.isArray(value)
+        ? value.map(
+            (item: DateValue) => new Date(item.year, item.month - 1, item.day)
+          )
+        : new Date(value.year, value.month - 1, value.day)
+    )
 }
 
 function toCalendarDate(date: Date) {
@@ -77,27 +80,26 @@ function toCalendarDate(date: Date) {
     date.getFullYear(),
     date.getMonth() + 1,
     date.getDate()
-  );
+  )
 }
 </script>
 
 <template>
-  <RangeCalendarRoot
+  <CalendarRoot
     ref="calendarRef"
     v-bind="props"
-    :number-of-months="props.numberOfMonths"
     v-slot="{ weekDays, grid }"
+    :number-of-months="props.numberOfMonths"
     :locale="'ru'"
     :weekday-format="'short'"
     class="mrfokus-dp-Calendar"
-    :allowNonContiguousRanges="true"
     :model-value="localModelValue"
+    :disable-days-outside-current-view="true"
+    :prevent-deselect="true"
     @update:model-value="changeDate"
-    :disableDaysOutsideCurrentView="true"
-    :preventDeselect="true"
   >
-    <RangeCalendarHeader class="mrfokus-dp-CalendarHeaderNavigation">
-      <RangeCalendarPrev class="mrfokus-dp-CalendarNavButton">
+    <CalendarHeader class="mrfokus-dp-CalendarHeaderNavigation">
+      <CalendarPrev class="mrfokus-dp-CalendarNavButton">
         <slot name="prev-icon">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -120,8 +122,8 @@ function toCalendarDate(date: Date) {
             />
           </svg>
         </slot>
-      </RangeCalendarPrev>
-      <RangeCalendarNext class="mrfokus-dp-CalendarNavButton">
+      </CalendarPrev>
+      <CalendarNext class="mrfokus-dp-CalendarNavButton">
         <slot name="next-icon">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -144,8 +146,8 @@ function toCalendarDate(date: Date) {
             />
           </svg>
         </slot>
-      </RangeCalendarNext>
-    </RangeCalendarHeader>
+      </CalendarNext>
+    </CalendarHeader>
     <Transition name="fade" mode="out-in">
       <div
         :key="grid[0] ? grid[0].value.toString() : ''"
@@ -156,35 +158,35 @@ function toCalendarDate(date: Date) {
             <hr class="mrfokus-dp-CalendarDivider" />
           </slot>
           <div class="mrfokus-dp-CalendarWrapperGrid">
-            <RangeCalendarHeader class="mrfokus-dp-CalendarHeader"
+            <CalendarHeader class="mrfokus-dp-CalendarHeader"
               >{{ ruMonths[month.value.month - 1] }}
-              {{ month.value.year }}</RangeCalendarHeader
+              {{ month.value.year }}</CalendarHeader
             >
-            <RangeCalendarGrid class="mrfokus-dp-CalendarGrid">
-              <RangeCalendarGridHead>
-                <RangeCalendarGridRow class="mrfokus-dp-CalendarGridRow">
-                  <RangeCalendarHeadCell
+            <CalendarGrid class="mrfokus-dp-CalendarGrid">
+              <CalendarGridHead>
+                <CalendarGridRow class="mrfokus-dp-CalendarGridRow">
+                  <CalendarHeadCell
                     v-for="day in weekDays"
                     :key="day"
                     class="mrfokus-dp-CalendarHeadCell"
                   >
                     {{ day }}
-                  </RangeCalendarHeadCell>
-                </RangeCalendarGridRow>
-              </RangeCalendarGridHead>
-              <RangeCalendarGridBody class="mrfokus-dp-grid">
-                <RangeCalendarGridRow
+                  </CalendarHeadCell>
+                </CalendarGridRow>
+              </CalendarGridHead>
+              <CalendarGridBody class="mrfokus-dp-grid">
+                <CalendarGridRow
                   v-for="(weekDates, index) in month.rows"
                   :key="`weekDate-${index}`"
                   class="mrfokus-dp-CalendarGridRow"
                 >
-                  <RangeCalendarCell
+                  <CalendarCell
                     v-for="weekDate in weekDates"
                     :key="weekDate.toString()"
                     :date="weekDate"
                     class="mrfokus-dp-CalendarCell"
                   >
-                    <RangeCalendarCellTrigger
+                    <CalendarCellTrigger
                       :day="weekDate"
                       :month="month.value"
                       class="mrfokus-dp-CalendarCellTrigger"
@@ -192,16 +194,16 @@ function toCalendarDate(date: Date) {
                       <div class="mrfokus-dp-CalendarDay">
                         {{ weekDate.day }}
                       </div>
-                    </RangeCalendarCellTrigger>
-                  </RangeCalendarCell>
-                </RangeCalendarGridRow>
-              </RangeCalendarGridBody>
-            </RangeCalendarGrid>
+                    </CalendarCellTrigger>
+                  </CalendarCell>
+                </CalendarGridRow>
+              </CalendarGridBody>
+            </CalendarGrid>
           </div>
         </template>
       </div>
     </Transition>
-  </RangeCalendarRoot>
+  </CalendarRoot>
 </template>
 
 <style>
@@ -245,7 +247,8 @@ function toCalendarDate(date: Date) {
 /* --- Анимация появления --- */
 .fade-enter-active,
 .fade-leave-active {
-  transition: opacity var(--dp-fade-duration, 0.1s) var(--dp-fade-ease, ease),
+  transition:
+    opacity var(--dp-fade-duration, 0.1s) var(--dp-fade-ease, ease),
     transform var(--dp-fade-duration, 0.1s) var(--dp-fade-ease, ease);
 }
 
@@ -280,7 +283,7 @@ function toCalendarDate(date: Date) {
   display: flex;
   flex-direction: column;
   align-items: center;
-  font-family: var(--dp-font-family, "Inter", sans-serif);
+  font-family: var(--dp-font-family, 'Inter', sans-serif);
   color: var(--dp-color-text, #0e1829);
   text-align: center;
   font-size: var(--dp-font-size, 14px);
@@ -318,6 +321,10 @@ function toCalendarDate(date: Date) {
   padding: var(--dp-nav-btn-padding, 8px);
   cursor: pointer;
   z-index: 1;
+  border-radius: var(--dp-radius-day, 10px);
+}
+.mrfokus-dp-CalendarNavButton:hover {
+  background: var(--dp-color-muted, #f2f4f7);
 }
 
 /* --- Таблица дней --- */
@@ -355,31 +362,8 @@ function toCalendarDate(date: Date) {
   justify-content: center;
   border-radius: var(--dp-radius-day, 10px);
 }
-
-/* --- Состояния выделения --- */
-.mrfokus-dp-CalendarCellTrigger[data-highlighted],
-.mrfokus-dp-CalendarCellTrigger[data-selected="true"] {
+.mrfokus-dp-CalendarCellTrigger:hover .mrfokus-dp-CalendarDay {
   background: var(--dp-color-muted, #f2f4f7);
-}
-
-.mrfokus-dp-CalendarCellTrigger[data-selection-start="true"],
-.mrfokus-dp-Calendar:has(.mrfokus-dp-CalendarCellTrigger[data-selected])
-  .mrfokus-dp-CalendarCellTrigger[data-highlighted-start="true"] {
-  background: linear-gradient(
-    90deg,
-    rgba(0, 0, 0, 0) 50%,
-    var(--dp-color-muted, #f2f4f7) 50%
-  );
-}
-
-.mrfokus-dp-CalendarCellTrigger[data-selection-end="true"],
-.mrfokus-dp-Calendar:has(.mrfokus-dp-CalendarCellTrigger[data-selected])
-  .mrfokus-dp-CalendarCellTrigger[data-highlighted-end="true"] {
-  background: linear-gradient(
-    90deg,
-    var(--dp-color-muted, #f2f4f7) 50%,
-    rgba(0, 0, 0, 0) 50%
-  );
 }
 
 .mrfokus-dp-CalendarCellTrigger[data-today] .mrfokus-dp-CalendarDay {
@@ -387,58 +371,11 @@ function toCalendarDate(date: Date) {
   border: 1px solid var(--dp-color-today-border, #0b182a);
 }
 
-.mrfokus-dp-CalendarCellTrigger[data-selection-start="true"]
-  .mrfokus-dp-CalendarDay,
-.mrfokus-dp-CalendarCellTrigger[data-selection-end="true"]
-  .mrfokus-dp-CalendarDay,
-.mrfokus-dp-Calendar:has(.mrfokus-dp-CalendarCellTrigger[data-selected])
-  .mrfokus-dp-CalendarCellTrigger[data-highlighted-end="true"]
-  .mrfokus-dp-CalendarDay,
-.mrfokus-dp-Calendar:has(.mrfokus-dp-CalendarCellTrigger[data-selected])
-  .mrfokus-dp-CalendarCellTrigger[data-highlighted-start="true"]
-  .mrfokus-dp-CalendarDay {
+.mrfokus-dp-CalendarCellTrigger[data-selected='true'] .mrfokus-dp-CalendarDay {
   background: var(--dp-color-selected-bg, #0e1829);
-  color: var(--dp-color-selected-text, #ffffff);
+  color: var(--dp-color-selected-text, hsl(0, 0%, 100%));
 }
 
-/* --- Радиусы начала и конца диапазона --- */
-.mrfokus-dp-CalendarCellTrigger[data-highlighted-start="true"],
-.mrfokus-dp-CalendarCellTrigger[data-selection-start="true"]:not(
-    [data-highlighted-end="true"]
-  ),
-.mrfokus-dp-CalendarCell:first-of-type
-  .mrfokus-dp-CalendarCellTrigger[data-highlighted],
-.mrfokus-dp-CalendarCell:first-of-type
-  .mrfokus-dp-CalendarCellTrigger[data-selected="true"] {
-  border-top-left-radius: var(--dp-radius-day, 10px);
-  border-bottom-left-radius: var(--dp-radius-day, 10px);
-}
-
-.mrfokus-dp-CalendarCellTrigger[data-highlighted-end="true"],
-.mrfokus-dp-CalendarCellTrigger[data-selection-end="true"],
-.mrfokus-dp-CalendarCell:last-of-type
-  .mrfokus-dp-CalendarCellTrigger[data-highlighted],
-.mrfokus-dp-CalendarCell:last-of-type
-  .mrfokus-dp-CalendarCellTrigger[data-selected="true"] {
-  border-top-right-radius: var(--dp-radius-day, 10px);
-  border-bottom-right-radius: var(--dp-radius-day, 10px);
-}
-
-.mrfokus-dp-CalendarCellTrigger[data-highlighted-start="true"].mrfokus-dp-CalendarCellTrigger[data-highlighted-end="true"] {
-  border-radius: var(--dp-radius-day, 10px);
-  background: transparent !important;
-}
-.mrfokus-dp-CalendarCellTrigger[data-selection-start="true"].mrfokus-dp-CalendarCellTrigger[data-selection-end="true"] {
-  background: transparent;
-}
-
-/* --- Прочие элементы --- */
-.mrfokus-dp-CalendarGridRow:not(:last-of-type) .mrfokus-dp-CalendarCellTrigger {
-  margin-bottom: var(--dp-cell-gap, 2px);
-}
-.mrfokus-dp-CalendarCellTrigger:not(:last-of-type) {
-  padding-right: var(--dp-cell-gap, 2px);
-}
 .mrfokus-dp-CalendarWrapper {
   display: flex;
 }
@@ -456,7 +393,8 @@ function toCalendarDate(date: Date) {
   margin: 0 -80px;
   z-index: 0;
 }
-.mrfokus-dp-CalendarCellTrigger[data-unavailable] {
+.mrfokus-dp-CalendarCellTrigger[data-unavailable],
+.mrfokus-dp-CalendarCellTrigger[data-unavailable] .mrfokus-dp-CalendarDay {
   cursor: not-allowed;
   color: var(--dp-color-muted-day, #96a2b5);
 }
@@ -464,12 +402,6 @@ function toCalendarDate(date: Date) {
   display: flex;
   flex-direction: column;
   gap: 3px;
-}
-.mrfokus-dp-CalendarCellTrigger:not([data-selected]):not(
-    [data-unavailable]
-  ):not([data-highlighted]):hover
-  .mrfokus-dp-CalendarDay {
-  background-color: var(--color-disabled-day, #f2f4f7);
 }
 
 .mrfokus-dp-CalendarCell:not([data-disabled]) {
